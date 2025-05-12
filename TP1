@@ -1,0 +1,237 @@
+typedef struct Noeud {
+    int valeur;
+    struct Noeud *suivant;
+} Noeud;
+Noeud* creerNoeud(int valeur) {
+    Noeud *nouveau = (Noeud*)malloc(sizeof(Noeud));
+    if (nouveau == NULL) {
+        printf("Erreur d'allocation mémoire\n");
+    }
+    nouveau->valeur = valeur;
+    nouveau->suivant = NULL;
+    return nouveau;
+}
+Void afficher(Noeud *debut) {
+    Noeud *courant = debut;
+    printf("Liste: [");
+    while (courant != NULL) {
+        printf("%d", courant->valeur);
+        if (courant->suivant != NULL) {
+            printf(", ");
+        }
+        courant = courant->suivant;
+    }
+    printf("]\n");
+}
+Noeud* ajouterDebut(Noeud *debut, int valeur) {
+    Noeud *nouveau = creerNoeud(valeur);
+    nouveau->suivant = debut;
+    return nouveau;
+}
+Noeud* ajouterFin(Noeud *debut, int valeur) {
+    Noeud *nouveau = creerNoeud(valeur);
+    
+    if (debut == NULL) {
+        return nouveau;
+    }
+    
+    Noeud *courant = debut;
+    while (courant->suivant != NULL) {
+        courant = courant->suivant;
+    }
+    courant->suivant = nouveau;
+    return debut;
+}
+int taille(Noeud *debut) {
+    int count = 0;
+    Noeud *courant = debut;
+    while (courant != NULL) {
+        count++;
+        courant = courant->suivant;
+    }
+    return count;
+}
+Noeud* insererPosition(Noeud *debut, int pos, int valeur) {
+    if (pos < 1 || pos > taille(debut) + 1) {
+        printf("Position invalide\n");
+        return debut;
+    }
+    
+    if (pos == 1) {
+        return ajouterDebut(debut, valeur);
+    }
+    
+    Noeud *nouveau = creerNoeud(valeur);
+    Noeud *courant = debut;
+    
+    for (int i = 1; i < pos - 1; i++) {
+        courant = courant->suivant;
+    }
+    
+    nouveau->suivant = courant->suivant;
+    courant->suivant = nouveau;
+    return debut;
+}
+void rechercher(Noeud *debut, int valeur) {
+    Noeud *courant = debut;
+    int pos = 1;
+    int trouve = 0;
+    
+    while (courant != NULL) {
+        if (courant->valeur == valeur) {
+            printf("Valeur %d trouvee a la position %d\n", valeur, pos);
+            trouve = 1;
+        }
+        courant = courant->suivant;
+        pos++;
+    }
+    
+    if (!trouve) {
+        printf("Valeur %d non trouvee dans la liste\n", valeur);
+    }
+}
+Noeud* supprimerDebut(Noeud *debut) {
+    if (debut == NULL) {
+        printf("Liste vide, rien a supprimer\n");
+        return NULL;
+    }
+    
+    Noeud *temp = debut;
+    debut = debut->suivant;
+    free(temp);
+    return debut;
+}
+Noeud* supprimerFin(Noeud *debut) {
+    if (debut == NULL) {
+        printf("Liste vide, rien a supprimer\n");
+        return NULL;
+    }
+    
+    if (debut->suivant == NULL) {
+        free(debut);
+        return NULL;
+    } Noeud *courant = debut;
+    while (courant->suivant->suivant != NULL) {
+        courant = courant->suivant;
+    }
+    
+    free(courant->suivant);
+    courant->suivant = NULL;
+    return debut;
+}
+Noeud* supprimerPosition(Noeud *debut, int pos) {
+    int t = taille(debut);
+    if (pos < 1 || pos > t) {
+        printf("Position invalide\n");
+        return debut;
+    }
+    
+    if (pos == 1) {
+        return supprimerDebut(debut);
+    }if (pos == t) {
+        return supprimerFin(debut);
+    }
+    
+    Noeud *courant = debut;
+    for (int i = 1; i < pos - 1; i++) {
+        courant = courant->suivant;
+    }
+    
+    Noeud *temp = courant->suivant;
+    courant->suivant = courant->suivant->suivant;
+    free(temp);
+    return debut;
+}
+Noeud* modifierDebut(Noeud *debut, int valeur) {
+    if (debut == NULL) {
+        printf("Liste vide, impossible de modifier\n");
+        return NULL;
+    }
+    debut->valeur = valeur;
+    return debut;
+}
+Noeud* modifierFin(Noeud *debut, int valeur) {
+    if (debut == NULL) {
+        printf("Liste vide, impossible de modifier\n");
+        return NULL;
+    }
+    
+    Noeud *courant = debut;
+    while (courant->suivant != NULL) {
+        courant = courant->suivant;
+    }
+    courant->valeur = valeur;
+    return debut;
+}
+Noeud* modifierPosition(Noeud *debut, int pos, int valeur) {
+    int t = taille(debut);
+    if (pos < 1 || pos > t) {
+        printf("Position invalide\n");
+        return debut;
+    }
+    
+    Noeud *courant = debut;
+    for (int i = 1; i < pos; i++) {
+        courant = courant->suivant;
+    }
+    courant->valeur = valeur;
+    return debut;
+}
+int main() {
+    Noeud *liste = NULL;
+    
+    printf("Creation d'une liste initiale avec 10, 20, 30\n");
+    liste = ajouterFin(liste, 10);
+    liste = ajouterFin(liste, 20);
+    liste = ajouterFin(liste, 30);
+    afficher(liste);
+    liste = ajouterFin(liste, 30);
+    afficher(liste);
+    
+    printf("\nAjout de 5 au debut\n");
+    liste = ajouterDebut(liste, 5);
+    afficher(liste);
+    
+    printf("\nAjout de 40 a la fin\n");
+    liste = ajouterFin(liste, 40);
+    afficher(liste);
+    
+    printf("\nInsertion de 15 a la position 3\n");
+    liste = insererPosition(liste, 3, 15);
+    afficher(liste);
+    
+    printf("\nTaille de la liste: %d\n", taille(liste));
+    
+    printf("\nRecherche de valeurs:\n");
+    rechercher(liste, 20);
+    rechercher(liste, 99);
+    
+    printf("\nSuppression du premier element\n");
+    liste = supprimerDebut(liste);
+    afficher(liste);
+    printf("\nSuppression du dernier element\n");
+    liste = supprimerFin(liste);
+    afficher(liste);
+    
+    printf("\nSuppression de l'element a la position 2\n");
+    liste = supprimerPosition(liste, 2);
+    afficher(liste);
+    
+    printf("\nModification du premier element en 100\n");
+    liste = modifierDebut(liste, 100);
+    afficher(liste);
+    
+    printf("\nModification du dernier element en 200\n");
+    liste = modifierFin(liste, 200);
+    afficher(liste);
+    
+    printf("\nModification de l'element a la position 2 en 150\n");
+    liste = modifierPosition(liste, 2, 150);
+    afficher(liste);
+    while (liste != NULL) {
+        liste = supprimerDebut(liste);
+    }
+    
+    return 0;
+}
+    
